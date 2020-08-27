@@ -1,0 +1,121 @@
+#include <iostream>
+#include <vector>
+
+using namespace std;
+
+class Tree{
+	
+	public:
+		Tree* root;
+		Tree* pRight;
+		Tree* pLeft;
+		int valor;
+		int posicao;
+		
+	Tree()
+	{
+		valor = 0;
+		posicao = -1;
+		pRight = NULL;
+		pLeft = NULL;
+		root = NULL;		
+	}
+	
+	void destroyTree(Tree* root)
+	{
+		if(root!=NULL)
+  		{
+    		destroyTree(root->pLeft);
+    		destroyTree(root->pRight);
+    		delete root;
+  		}
+  		
+  		root = NULL;
+	}
+	
+	~Tree()
+	{
+		destroyTree(root);
+	}
+	
+	void createNodeR(Tree* pRoot, int val, int i)
+	{
+		Tree* psRight = new Tree;
+		psRight->valor = val;
+		psRight->posicao = i;
+		psRight->root = pRoot->root;
+		pRoot->pRight = psRight;
+		
+	}
+	
+	void createNodeL(Tree* pRoot, int val, int i)
+	{
+		Tree* psLeft = new Tree;
+		psLeft->valor = val;
+		psLeft->posicao = i;
+		psLeft->root = pRoot->root;
+		pRoot->pLeft = psLeft;	
+	}
+	
+	void walkTree(Tree* pRoot, int val,int i)	
+	{
+		if((pRoot->valor < val) && (pRoot->pRight != NULL))
+			walkTree(pRoot->pRight,val,i);
+			
+		else if((pRoot->valor < val) && (pRoot->pRight == NULL))	
+			createNodeR(pRoot,val,i);
+			
+		else if((pRoot->valor > val) && (pRoot->pLeft != NULL))
+			walkTree(pRoot->pLeft,val,i);
+		
+		else if((pRoot->valor > val) && (pRoot->pLeft == NULL))
+			createNodeL(pRoot,val,i);	
+	}
+	
+	
+	void createTree(Tree* pRoot, vector<int> a)
+	{
+		vector<int>::size_type i = 1;		
+		
+		while(i<a.size())
+		{
+			walkTree(pRoot,a[i],static_cast<int>(i));
+			i++;
+		}		
+	}
+	
+	int busca(Tree* pRoot, int key)
+	{
+		static int chave = key;
+		
+		if((chave > pRoot->valor) && (pRoot->pRight != NULL))
+			return busca(pRoot->pRight,chave);
+			
+		else if((chave < pRoot->valor) && (pRoot->pLeft != NULL))
+			return busca(pRoot->pLeft,chave);
+		
+		if(chave == pRoot->valor)
+			return pRoot->posicao;
+	}
+	
+};
+
+int main()
+{
+	Tree obj1;
+	
+	Tree* pRoot = new Tree;
+	vector<int> a;	
+	a.push_back(0);a.push_back(-1);a.push_back(-5);a.push_back(3);
+	a.push_back(1);a.push_back(2);a.push_back(-4);a.push_back(-3);
+	a.push_back(4);a.push_back(5);a.push_back(-2);
+	
+	pRoot->root = pRoot;
+	pRoot->valor = 0;
+	pRoot->posicao = 0;
+	
+	obj1.createTree(pRoot,a);	
+	cout << obj1.busca(pRoot,1);
+	
+	return 0;
+}
